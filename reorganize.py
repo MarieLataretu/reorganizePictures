@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser(description=f"Reorganize jpg files in a directo
 parser.add_argument('mode', choices=['cp', 'mv'], help='copy (cp) or move (mv) files')
 parser.add_argument('source', help='source directory')
 parser.add_argument('target', help='parent directory for the reorganized files')
+parser.add_argument('-f', '--force', action='store_true', default=False, help='overwrite file if exist')
 
 args = parser.parse_args()
 
@@ -48,10 +49,16 @@ for dirpath,_,filenames in os.walk(args.source):
 
 					target_dir_with_date = f"{args.target}/{year}/{full_Date}"
 					os.makedirs(target_dir_with_date, exist_ok=True)
-					if args.mode == 'cp':
-						shutil.copy(pic, target_dir_with_date)
-					elif args.mode == 'mv':
-						shutil.move(pic, target_dir_with_date)
+
+					if os.path.isfile(os.path.join(target_dir_with_date,pic)) and not args.force:
+						log(f"Skipping {pic}: file already exists.")
+					else:
+						if os.path.isfile(os.path.join(target_dir_with_date,pic)):
+							log(f"Overwriting {pic}")
+						if args.mode == 'cp':
+							shutil.copy(pic, target_dir_with_date)
+						elif args.mode == 'mv':
+							shutil.move(pic, target_dir_with_date)
 				else:
 					log(f"Skipping {pic}: cannot extract EXIF tags.")
 		else:
