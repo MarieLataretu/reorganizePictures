@@ -50,11 +50,13 @@ for dirpath,_,filenames in os.walk(args.source):
 					target_dir_with_date = f"{args.target}/{year}/{full_Date}"
 					os.makedirs(target_dir_with_date, exist_ok=True)
 
-					if os.path.isfile(os.path.join(target_dir_with_date,pic)) and not args.force:
-						log(f"Skipping {pic}: file already exists.")
+					new_pic = os.path.join(target_dir_with_date,f)
+
+					if os.path.isfile(new_pic) and not args.force:
+						log(f"Skipping {f}: file already exists at {new_pic}.")
 					else:
-						if os.path.isfile(os.path.join(target_dir_with_date,pic)):
-							log(f"Overwriting {pic}")
+						if os.path.isfile(new_pic) and args.force:
+							log(f"Overwriting {new_pic}")
 						if args.mode == 'cp':
 							shutil.copy(pic, target_dir_with_date)
 						elif args.mode == 'mv':
